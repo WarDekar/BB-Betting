@@ -1,7 +1,12 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import { WorkflowManager } from '../workflows/WorkflowManager.js';
 import type { SiteConfig, ProxyConfig } from '../types/index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export interface ApiServerConfig {
   port: number;
@@ -30,9 +35,15 @@ export class ApiServer {
     this.app.use(cors());
     this.app.use(express.json());
 
-    // Request logging
+    // Serve static files from web/public
+    const publicPath = join(__dirname, '..', 'web', 'public');
+    this.app.use(express.static(publicPath));
+
+    // Request logging (skip static files)
     this.app.use((req, _res, next) => {
-      console.log(`[API] ${req.method} ${req.path}`);
+      if (!req.path.match(/\.(html|css|js|png|jpg|ico)$/)) {
+        console.log(`[API] ${req.method} ${req.path}`);
+      }
       next();
     });
   }
@@ -328,6 +339,7 @@ export class ApiServer {
     return new Promise((resolve) => {
       this.server = this.app.listen(this.config.port, this.config.host!, () => {
         console.log(`🚀 BB-Browser API running at http://${this.config.host}:${this.config.port}`);
+        console.log(`📺 Web UI available at http://${this.config.host}:${this.config.port}/`);
         resolve();
       });
     });
