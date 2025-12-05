@@ -23,7 +23,7 @@ export class BrowserInstance extends EventEmitter {
     this.name = config.name;
     this.config = {
       headless: false, // Default to showing browser
-      viewport: { width: 1920, height: 1080 },
+      // Don't set default viewport - let it use actual window size
       ...config,
     };
   }
@@ -62,9 +62,14 @@ export class BrowserInstance extends EventEmitter {
     this._createdAt = new Date();
 
     try {
-      // Build launch options
+      // Build launch options - use system Chrome instead of "Chrome for Testing"
       const launchOptions: Parameters<typeof chromium.launch>[0] = {
         headless: this.config.headless,
+        executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        args: [
+          '--disable-blink-features=AutomationControlled', // Hide automation detection
+        ],
+        ignoreDefaultArgs: ['--enable-automation'], // Remove automation flag
       };
 
       // Add proxy if configured
@@ -74,9 +79,10 @@ export class BrowserInstance extends EventEmitter {
 
       this.browser = await chromium.launch(launchOptions);
 
-      // Create browser context with viewport
+      // Create browser context
+      // Use null viewport to match actual window size, or use specified viewport
       const contextOptions: Parameters<Browser['newContext']>[0] = {
-        viewport: this.config.viewport,
+        viewport: this.config.viewport ?? null,
       };
 
       this.context = await this.browser.newContext(contextOptions);

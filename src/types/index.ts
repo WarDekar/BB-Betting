@@ -108,6 +108,10 @@ export interface SiteConfig {
   sessionName?: string;
   /** Run headless (default: false) */
   headless?: boolean;
+  /** Login username (optional) */
+  username?: string;
+  /** Login password (optional) */
+  password?: string;
 }
 
 /** Result from a workflow action */

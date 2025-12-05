@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BB-Browser Control Panel</title>
+  <title>BB-Browser - Betting Site Manager</title>
   <style>
     :root {
-      --bg-primary: #1a1a2e;
-      --bg-secondary: #16213e;
-      --bg-card: #0f3460;
-      --accent: #e94560;
-      --accent-hover: #ff6b6b;
-      --text-primary: #eee;
-      --text-secondary: #aaa;
+      --bg-primary: #1a1d29;
+      --bg-secondary: rgba(40, 44, 58, 0.95);
+      --bg-card: rgba(30, 34, 48, 0.7);
+      --accent: #7b9cf5;
+      --accent-hover: #8badf7;
+      --accent-dark: #5a7bd5;
+      --text-primary: #e0e0e0;
+      --text-secondary: #a0a0a0;
       --success: #4ade80;
-      --warning: #fbbf24;
-      --error: #f87171;
-      --border: #334155;
+      --warning: #ffc107;
+      --error: #f44336;
+      --border: rgba(123, 156, 245, 0.2);
+      --border-hover: rgba(123, 156, 245, 0.3);
     }
 
     * {
@@ -26,10 +28,11 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1d29 0%, #252a3a 100%);
       color: var(--text-primary);
       min-height: 100vh;
+      line-height: 1.6;
     }
 
     .container {
@@ -43,8 +46,11 @@
       justify-content: space-between;
       align-items: center;
       padding: 20px 0;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--border-hover);
       margin-bottom: 30px;
+      background-color: rgba(30, 34, 48, 0.95);
+      margin: 0 -20px 30px -20px;
+      padding: 20px 20px;
     }
 
     h1 {
@@ -73,21 +79,26 @@
       gap: 20px;
     }
 
+    .grid-full {
+      grid-column: 1 / -1;
+    }
+
     @media (max-width: 900px) {
       .grid { grid-template-columns: 1fr; }
     }
 
     .card {
       background: var(--bg-secondary);
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 20px;
       border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     .card h2 {
       font-size: 1.2rem;
       margin-bottom: 15px;
-      color: var(--text-secondary);
+      color: var(--text-primary);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -95,6 +106,16 @@
 
     .form-group {
       margin-bottom: 15px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .form-row > * {
+      flex: 1;
     }
 
     label {
@@ -107,9 +128,9 @@
     input, select {
       width: 100%;
       padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg-primary);
+      border-radius: 4px;
+      border: 1px solid var(--border-hover);
+      background: var(--bg-card);
       color: var(--text-primary);
       font-size: 1rem;
     }
@@ -117,6 +138,8 @@
     input:focus, select:focus {
       outline: none;
       border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(123, 156, 245, 0.2);
+      background: rgba(30, 34, 48, 0.9);
     }
 
     button {
@@ -129,27 +152,49 @@
     }
 
     .btn-primary {
-      background: var(--accent);
+      background: linear-gradient(135deg, #7b9cf5 0%, #5a7bd5 100%);
       color: white;
+      border: none;
     }
 
     .btn-primary:hover {
-      background: var(--accent-hover);
+      background: linear-gradient(135deg, #8badf7 0%, #6a8be5 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(123, 156, 245, 0.3);
     }
 
     .btn-secondary {
-      background: var(--bg-card);
-      color: var(--text-primary);
-      border: 1px solid var(--border);
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      color: white;
+      border: none;
     }
 
     .btn-secondary:hover {
-      background: var(--border);
+      background: linear-gradient(135deg, #7d8891 0%, #6c757d 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+      color: #1a1d29;
+      border: none;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
     }
 
     .btn-danger {
-      background: var(--error);
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
       color: white;
+      border: none;
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
     }
 
     .btn-small {
@@ -157,76 +202,117 @@
       font-size: 0.85rem;
     }
 
-    .browser-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .btn-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
-    .browser-item {
-      background: var(--bg-card);
+    /* Site Cards */
+    .site-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .site-card {
+      background: var(--bg-secondary);
       padding: 15px;
       border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s;
+    }
+
+    .site-card:hover {
+      box-shadow: 0 4px 16px rgba(123, 156, 245, 0.2);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .site-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(123, 156, 245, 0.3);
+    }
+
+    .site-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 10px;
     }
 
-    .browser-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .browser-name {
+    .site-name {
       font-weight: 600;
       font-size: 1.1rem;
     }
 
-    .browser-meta {
+    .site-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+    }
+
+    .site-status .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .site-status .dot.online { background: var(--success); }
+    .site-status .dot.offline { background: var(--text-secondary); }
+    .site-status .dot.error { background: var(--error); }
+
+    .site-meta {
       font-size: 0.85rem;
       color: var(--text-secondary);
+      margin-bottom: 12px;
     }
 
-    .browser-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .session-list {
+    .site-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
     }
 
-    .session-tag {
-      background: var(--bg-card);
+    /* Tags */
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: rgba(123, 156, 245, 0.2);
       padding: 6px 12px;
       border-radius: 20px;
       font-size: 0.85rem;
       display: flex;
       align-items: center;
       gap: 6px;
+      border: 1px solid var(--border-hover);
     }
 
-    .session-tag .delete {
+    .tag .delete {
       cursor: pointer;
       opacity: 0.6;
     }
 
-    .session-tag .delete:hover {
+    .tag .delete:hover {
       opacity: 1;
       color: var(--error);
     }
 
+    /* Log */
     .log-container {
-      background: var(--bg-primary);
+      background: var(--bg-card);
       border-radius: 8px;
       padding: 15px;
       height: 200px;
       overflow-y: auto;
       font-family: 'Monaco', 'Menlo', monospace;
       font-size: 0.85rem;
+      border: 1px solid var(--border);
     }
 
     .log-entry {
@@ -242,29 +328,15 @@
     .log-success { color: var(--success); }
     .log-error { color: var(--error); }
     .log-info { color: var(--accent); }
+    .log-warning { color: var(--warning); }
 
     .empty-state {
       text-align: center;
-      padding: 40px;
+      padding: 30px;
       color: var(--text-secondary);
     }
 
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .checkbox-group input {
-      width: auto;
-    }
-
-    .quick-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
+    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -287,7 +359,7 @@
       padding: 30px;
       border-radius: 12px;
       width: 90%;
-      max-width: 500px;
+      max-width: 600px;
       max-height: 80vh;
       overflow-y: auto;
     }
@@ -307,19 +379,97 @@
       cursor: pointer;
     }
 
-    .screenshot-preview {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-top: 10px;
-    }
-
-    .nav-form {
+    /* Collapsible */
+    .collapsible-header {
+      cursor: pointer;
       display: flex;
-      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .nav-form input {
-      flex: 1;
+    .collapsible-header .toggle {
+      transition: transform 0.2s;
+    }
+
+    .collapsible-header.collapsed .toggle {
+      transform: rotate(-90deg);
+    }
+
+    .collapsible-content {
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .collapsible-content.collapsed {
+      max-height: 0 !important;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    /* Workflow status badges */
+    .workflow-badge {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+      font-weight: 600;
+    }
+
+    .workflow-badge.implemented {
+      background: rgba(74, 222, 128, 0.2);
+      color: var(--success);
+      border: 1px solid rgba(74, 222, 128, 0.4);
+    }
+
+    .workflow-badge.pending {
+      background: rgba(255, 193, 7, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(255, 193, 7, 0.4);
+    }
+
+    .workflow-badge.none {
+      background: rgba(160, 160, 160, 0.15);
+      color: var(--text-secondary);
+      border: 1px solid rgba(160, 160, 160, 0.3);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .tab {
+      padding: 12px 24px;
+      background: transparent;
+      color: var(--text-secondary);
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      color: var(--text-primary);
+      background: rgba(123, 156, 245, 0.1);
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
     }
   </style>
 </head>
@@ -328,112 +478,232 @@
     <header>
       <h1>
         <span class="status-indicator"></span>
-        BB-Browser Control Panel
+        BB-Browser
       </h1>
       <div>
+        <button class="btn-secondary btn-small" onclick="openModal('addSiteModal')">+ Add Site</button>
         <button class="btn-secondary btn-small" onclick="refreshAll()">Refresh</button>
       </div>
     </header>
 
-    <div class="grid">
-      <!-- Launch Browser -->
-      <div class="card">
-        <h2>🚀 Launch Browser</h2>
-        <form id="launchForm" onsubmit="launchBrowser(event)">
-          <div class="form-group">
-            <label for="browserName">Browser Name</label>
-            <input type="text" id="browserName" placeholder="e.g., my-site" required>
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('sites')">Sites</button>
+      <button class="tab" onclick="switchTab('proxies')">Proxies</button>
+    </div>
+
+    <!-- Sites Tab -->
+    <div id="tab-sites" class="tab-content active">
+      <div class="grid">
+        <!-- Betting Sites -->
+        <div class="card grid-full">
+          <h2>Betting Sites</h2>
+          <div id="siteList" class="site-list">
+            <div class="empty-state">
+              No sites configured. Click "+ Add Site" to get started.
+            </div>
           </div>
-          <div class="form-group">
-            <label for="proxyUrl">Proxy URL (optional)</label>
-            <input type="text" id="proxyUrl" placeholder="http://user:pass@host:port">
+        </div>
+
+        <!-- Running Browsers -->
+        <div class="card">
+          <h2>Running Browsers</h2>
+          <div id="browserList" class="site-list">
+            <div class="empty-state">No browsers running</div>
           </div>
-          <div class="form-group checkbox-group">
-            <input type="checkbox" id="headless">
-            <label for="headless">Headless Mode</label>
+        </div>
+
+        <!-- Sessions -->
+        <div class="card">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <h2 style="margin-bottom: 0;">Saved Sessions</h2>
+            <span class="toggle">▼</span>
           </div>
-          <button type="submit" class="btn-primary">Launch Browser</button>
-        </form>
-      </div>
+          <div class="collapsible-content" style="max-height: 300px; padding-top: 15px;">
+            <div id="sessionList" class="tag-list">
+              <div class="empty-state">No saved sessions</div>
+            </div>
+          </div>
+        </div>
 
-      <!-- Running Browsers -->
-      <div class="card">
-        <h2>🌐 Running Browsers</h2>
-        <div id="browserList" class="browser-list">
-          <div class="empty-state">No browsers running</div>
+        <!-- Activity Log -->
+        <div class="card grid-full">
+          <h2>Activity Log</h2>
+          <div id="logContainer" class="log-container">
+            <div class="log-entry">
+              <span class="log-time">--:--:--</span>
+              <span class="log-info">Ready</span>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Navigate -->
-      <div class="card">
-        <h2>🧭 Navigate</h2>
-        <form id="navForm" class="nav-form" onsubmit="navigateTo(event)">
-          <select id="navBrowser" required>
-            <option value="">Select browser...</option>
-          </select>
-          <input type="url" id="navUrl" placeholder="https://example.com" required>
-          <button type="submit" class="btn-primary">Go</button>
-        </form>
-        <div class="quick-actions">
-          <button class="btn-secondary btn-small" onclick="takeScreenshot()">📸 Screenshot</button>
-          <button class="btn-secondary btn-small" onclick="getContent()">📄 Get Content</button>
-        </div>
-      </div>
-
-      <!-- Sessions -->
-      <div class="card">
-        <h2>💾 Sessions</h2>
-        <div id="sessionList" class="session-list">
-          <div class="empty-state">No saved sessions</div>
-        </div>
-        <div style="margin-top: 15px; display: flex; gap: 10px;">
-          <select id="sessionBrowser" style="flex: 1;">
-            <option value="">Select browser...</option>
-          </select>
-          <input type="text" id="sessionName" placeholder="Session name" style="flex: 1;">
-          <button class="btn-primary btn-small" onclick="saveSession()">Save</button>
-        </div>
-      </div>
-
-      <!-- Activity Log -->
-      <div class="card" style="grid-column: 1 / -1;">
-        <h2>📋 Activity Log</h2>
-        <div id="logContainer" class="log-container">
-          <div class="log-entry">
-            <span class="log-time">--:--:--</span>
-            <span class="log-info">Waiting for activity...</span>
+    <!-- Proxies Tab -->
+    <div id="tab-proxies" class="tab-content">
+      <div class="grid">
+        <div class="card grid-full">
+          <h2>Saved Proxies</h2>
+          <div id="proxyList" class="tag-list" style="margin-bottom: 20px;">
+            <div class="empty-state">No saved proxies</div>
+          </div>
+          <h3 style="color: var(--text-secondary); margin-bottom: 15px; font-size: 1rem;">Add New Proxy</h3>
+          <div class="form-row">
+            <input type="text" id="proxyName" placeholder="Name (e.g., US-1)">
+            <input type="text" id="proxyServer" placeholder="http://host:port">
+          </div>
+          <div class="form-row">
+            <input type="text" id="proxyUser" placeholder="Username (optional)">
+            <input type="password" id="proxyPass" placeholder="Password (optional)">
+            <button class="btn-primary btn-small" onclick="saveProxy()">Save Proxy</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Screenshot Modal -->
-  <div id="screenshotModal" class="modal">
+  <!-- Add Site Modal -->
+  <div id="addSiteModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Screenshot</h3>
-        <button class="modal-close" onclick="closeModal('screenshotModal')">&times;</button>
+        <h3>Add Betting Site</h3>
+        <button class="modal-close" onclick="closeModal('addSiteModal')">&times;</button>
       </div>
-      <img id="screenshotImage" class="screenshot-preview" src="" alt="Screenshot">
+      <form id="addSiteForm" onsubmit="addSite(event)">
+        <div class="form-group">
+          <label for="siteId">Site ID (unique identifier)</label>
+          <input type="text" id="siteId" placeholder="e.g., pinnacle, bovada, draftkings" required>
+        </div>
+        <div class="form-group">
+          <label for="siteName">Display Name</label>
+          <input type="text" id="siteName" placeholder="e.g., Pinnacle Sports" required>
+        </div>
+        <div class="form-group">
+          <label for="siteUrl">Site URL</label>
+          <input type="url" id="siteUrl" placeholder="https://www.pinnacle.com" required>
+        </div>
+        <div class="form-group">
+          <label for="siteProxy">Proxy (optional)</label>
+          <select id="siteProxy">
+            <option value="">No proxy</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div>
+            <label for="siteUsername">Username</label>
+            <input type="text" id="siteUsername" placeholder="Your username">
+          </div>
+          <div>
+            <label for="sitePassword">Password</label>
+            <input type="password" id="sitePassword" placeholder="Your password">
+          </div>
+        </div>
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+          <button type="submit" class="btn-primary">Add Site</button>
+          <button type="button" class="btn-secondary" onclick="closeModal('addSiteModal')">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- Content Modal -->
-  <div id="contentModal" class="modal">
+  <!-- Edit Site Modal -->
+  <div id="editSiteModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Page Content</h3>
-        <button class="modal-close" onclick="closeModal('contentModal')">&times;</button>
+        <h3>Edit Site</h3>
+        <button class="modal-close" onclick="closeModal('editSiteModal')">&times;</button>
       </div>
-      <div id="pageContent" class="log-container" style="height: 400px; white-space: pre-wrap;"></div>
+      <form id="editSiteForm" onsubmit="updateSite(event)">
+        <input type="hidden" id="editSiteId">
+        <div class="form-group">
+          <label for="editSiteName">Display Name</label>
+          <input type="text" id="editSiteName" required>
+        </div>
+        <div class="form-group">
+          <label for="editSiteUrl">Site URL</label>
+          <input type="url" id="editSiteUrl" required>
+        </div>
+        <div class="form-group">
+          <label for="editSiteProxy">Proxy</label>
+          <select id="editSiteProxy">
+            <option value="">No proxy</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div>
+            <label for="editSiteUsername">Username</label>
+            <input type="text" id="editSiteUsername">
+          </div>
+          <div>
+            <label for="editSitePassword">Password</label>
+            <input type="password" id="editSitePassword" placeholder="(unchanged if empty)">
+          </div>
+        </div>
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+          <button type="submit" class="btn-primary">Save Changes</button>
+          <button type="button" class="btn-danger" onclick="deleteSiteFromModal()">Delete Site</button>
+          <button type="button" class="btn-secondary" onclick="closeModal('editSiteModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Get History Modal -->
+  <div id="historyModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Get Bet History</h3>
+        <button class="modal-close" onclick="closeModal('historyModal')">&times;</button>
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label style="font-weight: 500; margin-bottom: 8px; display: block;">Quick Select:</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <button class="btn-secondary btn-small" onclick="setHistoryPreset('today')">Today</button>
+          <button class="btn-secondary btn-small" onclick="setHistoryPreset('yesterday')">Yesterday</button>
+          <button class="btn-secondary btn-small" onclick="setHistoryPreset('last7')">Last 7 Days</button>
+          <button class="btn-secondary btn-small" onclick="setHistoryPreset('thisWeek')">This Week</button>
+          <button class="btn-secondary btn-small" onclick="setHistoryPreset('lastWeek')">Last Week</button>
+          <button class="btn-secondary btn-small" onclick="setHistoryPreset('thisMonth')">This Month</button>
+          <button class="btn-secondary btn-small" onclick="setHistoryPreset('lastMonth')">Last Month</button>
+        </div>
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label style="font-weight: 500; margin-bottom: 8px; display: block;">Custom Range:</label>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="date" id="historyFromDate" class="form-control" style="flex: 1;">
+          <span>to</span>
+          <input type="date" id="historyToDate" class="form-control" style="flex: 1;">
+        </div>
+      </div>
+      <input type="hidden" id="historySiteId">
+      <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button class="btn-primary" onclick="fetchHistory()">Get History</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('historyModal')">Cancel</button>
+      </div>
     </div>
   </div>
 
   <script>
     const API_BASE = window.location.origin;
 
+    // ============================================
+    // In-memory cache (loaded from server)
+    // ============================================
+    let cachedSites = [];
+    let cachedProxies = [];
+
+    function getSavedSites() {
+      return cachedSites;
+    }
+
+    function getSavedProxies() {
+      return cachedProxies;
+    }
+
+    // ============================================
     // Logging
+    // ============================================
+
     function log(message, type = 'info') {
       const container = document.getElementById('logContainer');
       const time = new Date().toLocaleTimeString();
@@ -443,7 +713,10 @@
       container.insertBefore(entry, container.firstChild);
     }
 
+    // ============================================
     // API Helpers
+    // ============================================
+
     async function api(endpoint, options = {}) {
       try {
         const res = await fetch(`${API_BASE}${endpoint}`, {
@@ -459,45 +732,676 @@
       }
     }
 
-    // Load browsers
+    // ============================================
+    // Site Management
+    // ============================================
+
+    let runningBrowsers = [];
+
+    async function loadSites() {
+      try {
+        const { sites } = await api('/sites');
+        cachedSites = sites || [];
+      } catch (err) {
+        console.error('Failed to load sites from server:', err);
+      }
+
+      const list = document.getElementById('siteList');
+
+      if (cachedSites.length === 0) {
+        list.innerHTML = '<div class="empty-state">No sites configured. Click "+ Add Site" to get started.</div>';
+        return;
+      }
+
+      list.innerHTML = cachedSites.map(site => {
+        const browserRunning = runningBrowsers.some(b => b.name === site.id);
+        const statusClass = browserRunning ? 'online' : 'offline';
+        const statusText = browserRunning ? 'Running' : 'Stopped';
+
+        // Check if workflow is implemented (we'll track this)
+        const workflowStatus = site.workflowImplemented ? 'implemented' : 'pending';
+        const workflowText = site.workflowImplemented ? 'Workflow Ready' : 'Needs Workflow';
+
+        return `
+          <div class="site-card ${browserRunning ? 'active' : ''}" data-site-id="${site.id}">
+            <div class="site-header">
+              <div>
+                <span class="site-name">${site.name}</span>
+                <span class="workflow-badge ${workflowStatus}">${workflowText}</span>
+              </div>
+              <div class="site-status">
+                <span class="dot ${statusClass}"></span>
+                ${statusText}
+              </div>
+            </div>
+            <div class="site-meta">
+              ${site.baseUrl}<br>
+              ${site.proxyName ? `Proxy: ${site.proxyName}` : 'No proxy'} |
+              ${site.username ? `User: ${site.username}` : 'No credentials'}
+            </div>
+            <div class="site-actions">
+              ${browserRunning ? `
+                <button class="btn-primary btn-small" onclick="loginSite('${site.id}')">Login</button>
+                <button class="btn-secondary btn-small" onclick="getHistory('${site.id}')">Get History</button>
+                <button class="btn-secondary btn-small" onclick="navigateSite('${site.id}')">Go to Site</button>
+                <button class="btn-secondary btn-small" onclick="screenshotSite('${site.id}')">Screenshot</button>
+                <button class="btn-danger btn-small" onclick="closeSiteBrowser('${site.id}')">Stop</button>
+              ` : `
+                <button class="btn-success btn-small" onclick="launchSite('${site.id}')">Launch</button>
+              `}
+              <button class="btn-secondary btn-small" onclick="editSite('${site.id}')">Edit</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function addSite(event) {
+      event.preventDefault();
+
+      const proxyName = document.getElementById('siteProxy').value;
+
+      const site = {
+        id: document.getElementById('siteId').value.trim().toLowerCase().replace(/\s+/g, '-'),
+        name: document.getElementById('siteName').value.trim(),
+        baseUrl: document.getElementById('siteUrl').value.trim(),
+        proxyName: proxyName || undefined,
+        username: document.getElementById('siteUsername').value.trim() || undefined,
+        password: document.getElementById('sitePassword').value || undefined,
+        workflowImplemented: false,
+      };
+
+      // Check for duplicate
+      if (cachedSites.some(s => s.id === site.id)) {
+        log(`Site "${site.id}" already exists`, 'error');
+        return;
+      }
+
+      try {
+        await api('/sites', {
+          method: 'POST',
+          body: JSON.stringify(site),
+        });
+        log(`Site "${site.name}" added`, 'success');
+        closeModal('addSiteModal');
+        document.getElementById('addSiteForm').reset();
+        await loadSites();
+      } catch (err) {
+        log(`Failed to add site: ${err.message}`, 'error');
+      }
+    }
+
+    function editSite(siteId) {
+      const site = cachedSites.find(s => s.id === siteId);
+      if (!site) return;
+
+      document.getElementById('editSiteId').value = site.id;
+      document.getElementById('editSiteName').value = site.name;
+      document.getElementById('editSiteUrl').value = site.baseUrl;
+      document.getElementById('editSiteProxy').value = site.proxyName || '';
+      document.getElementById('editSiteUsername').value = site.username || '';
+      document.getElementById('editSitePassword').value = '';
+
+      updateProxyDropdowns();
+      openModal('editSiteModal');
+    }
+
+    async function updateSite(event) {
+      event.preventDefault();
+
+      const siteId = document.getElementById('editSiteId').value;
+      const site = cachedSites.find(s => s.id === siteId);
+      if (!site) return;
+
+      const newPassword = document.getElementById('editSitePassword').value;
+
+      const updates = {
+        name: document.getElementById('editSiteName').value.trim(),
+        baseUrl: document.getElementById('editSiteUrl').value.trim(),
+        proxyName: document.getElementById('editSiteProxy').value || undefined,
+        username: document.getElementById('editSiteUsername').value.trim() || undefined,
+        password: newPassword || site.password,
+      };
+
+      try {
+        await api(`/sites/${siteId}`, {
+          method: 'PUT',
+          body: JSON.stringify(updates),
+        });
+        log(`Site "${updates.name}" updated`, 'success');
+        closeModal('editSiteModal');
+        await loadSites();
+      } catch (err) {
+        log(`Failed to update site: ${err.message}`, 'error');
+      }
+    }
+
+    async function deleteSiteFromModal() {
+      const siteId = document.getElementById('editSiteId').value;
+      if (!confirm(`Delete site "${siteId}"? This cannot be undone.`)) return;
+
+      try {
+        await api(`/sites/${siteId}/config`, { method: 'DELETE' });
+        log(`Site "${siteId}" deleted`, 'success');
+        closeModal('editSiteModal');
+        await loadSites();
+      } catch (err) {
+        log(`Failed to delete site: ${err.message}`, 'error');
+      }
+    }
+
+    // ============================================
+    // Site Browser Actions
+    // ============================================
+
+    async function launchSite(siteId) {
+      const site = cachedSites.find(s => s.id === siteId);
+      if (!site) return;
+
+      let proxy = undefined;
+      if (site.proxyName) {
+        const p = cachedProxies.find(px => px.name === site.proxyName);
+        if (p) {
+          proxy = { server: p.server, username: p.username, password: p.password };
+        }
+      }
+
+      try {
+        await api('/browsers', {
+          method: 'POST',
+          body: JSON.stringify({ name: siteId, proxy, headless: false }),
+        });
+        log(`Launched browser for ${site.name}`, 'success');
+        await loadBrowsers();
+
+        // Navigate to site
+        await api(`/browsers/${siteId}/goto`, {
+          method: 'POST',
+          body: JSON.stringify({ url: site.baseUrl }),
+        });
+        log(`Navigated to ${site.baseUrl}`, 'success');
+      } catch (err) {
+        // Already logged
+      }
+    }
+
+    async function closeSiteBrowser(siteId) {
+      try {
+        await api(`/browsers/${siteId}`, { method: 'DELETE' });
+        log(`Closed browser for ${siteId}`, 'success');
+        await loadBrowsers();
+      } catch (err) {
+        // Already logged
+      }
+    }
+
+    async function navigateSite(siteId) {
+      const sites = getSavedSites();
+      const site = sites.find(s => s.id === siteId);
+      if (!site) return;
+
+      try {
+        await api(`/browsers/${siteId}/goto`, {
+          method: 'POST',
+          body: JSON.stringify({ url: site.baseUrl }),
+        });
+        log(`Navigated ${siteId} to ${site.baseUrl}`, 'success');
+      } catch (err) {
+        // Already logged
+      }
+    }
+
+    async function screenshotSite(siteId) {
+      try {
+        const res = await fetch(`${API_BASE}/browsers/${siteId}/screenshot`);
+        if (!res.ok) throw new Error('Screenshot failed');
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+
+        // Open in new tab
+        const win = window.open();
+        win.document.write(`<img src="${url}" style="max-width:100%">`);
+        log(`Screenshot taken for ${siteId}`, 'success');
+      } catch (err) {
+        log(`Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function loginSite(siteId) {
+      const site = cachedSites.find(s => s.id === siteId);
+      if (!site) return;
+
+      if (!site.username || !site.password) {
+        log(`No credentials saved for ${siteId}. Edit site to add them.`, 'error');
+        return;
+      }
+
+      log(`Logging into ${site.name}...`, 'info');
+
+      try {
+        // Use the workflow system for login
+        const result = await api(`/sites/${siteId}/login`, {
+          method: 'POST',
+        });
+
+        if (result.success) {
+          log(`Logged into ${site.name} successfully!`, 'success');
+        } else {
+          log(`Login may have failed for ${site.name}: ${result.error || 'Check browser'}`, 'warning');
+        }
+      } catch (err) {
+        log(`Login error: ${err.message}`, 'error');
+      }
+    }
+
+    function getHistory(siteId) {
+      // Open modal with date pickers
+      document.getElementById('historySiteId').value = siteId;
+      // Default to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('historyFromDate').value = today;
+      document.getElementById('historyToDate').value = today;
+      openModal('historyModal');
+    }
+
+    function setHistoryPreset(preset) {
+      const today = new Date();
+      let from, to;
+
+      switch (preset) {
+        case 'today':
+          from = to = today;
+          break;
+        case 'yesterday':
+          from = to = new Date(today.setDate(today.getDate() - 1));
+          break;
+        case 'last7':
+          to = new Date();
+          from = new Date(new Date().setDate(new Date().getDate() - 7));
+          break;
+        case 'thisWeek':
+          to = new Date();
+          from = new Date(new Date().setDate(new Date().getDate() - new Date().getDay()));
+          break;
+        case 'lastWeek':
+          const lastSunday = new Date(new Date().setDate(new Date().getDate() - new Date().getDay() - 7));
+          from = lastSunday;
+          to = new Date(lastSunday.getTime() + 6 * 24 * 60 * 60 * 1000);
+          break;
+        case 'thisMonth':
+          from = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+          to = new Date();
+          break;
+        case 'lastMonth':
+          from = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
+          to = new Date(new Date().getFullYear(), new Date().getMonth(), 0);
+          break;
+      }
+
+      document.getElementById('historyFromDate').value = from.toISOString().split('T')[0];
+      document.getElementById('historyToDate').value = to.toISOString().split('T')[0];
+    }
+
+    async function fetchHistory() {
+      const siteId = document.getElementById('historySiteId').value;
+      const fromDate = document.getElementById('historyFromDate').value;
+      const toDate = document.getElementById('historyToDate').value;
+
+      if (!fromDate || !toDate) {
+        log('Please select a date range', 'error');
+        return;
+      }
+
+      closeModal('historyModal');
+      log(`Getting bet history for ${siteId} from ${fromDate} to ${toDate}...`, 'info');
+
+      try {
+        // Route to site-specific scraper
+        const site = cachedSites.find(s => s.id === siteId);
+
+        let bets = [];
+        if (site?.baseUrl?.includes('sports411')) {
+          bets = await fetchHistorySports411(siteId, fromDate, toDate);
+        } else if (site?.baseUrl?.includes('probet42') || site?.baseUrl?.includes('pinnacle')) {
+          bets = await fetchHistoryPinnacle(siteId, fromDate, toDate);
+        } else if (site?.baseUrl?.includes('betonline')) {
+          bets = await fetchHistoryBetOnline(siteId, fromDate, toDate);
+        } else {
+          log(`No scraper implemented for ${site?.name || siteId}`, 'error');
+          return;
+        }
+
+        if (bets.length === 0) {
+          log(`No bets found for ${fromDate} to ${toDate}`, 'warning');
+          return;
+        }
+
+        log(`Found ${bets.length} bets total`, 'success');
+
+        // Show summary of wins/losses
+        const wins = bets.filter(b => b.winLoss && b.winLoss.includes('+')).length;
+        const losses = bets.filter(b => b.winLoss && b.winLoss.includes('-')).length;
+        log(`Summary: ${wins} wins, ${losses} losses`, 'info');
+
+        // Save to cache
+        try {
+          const cacheResult = await api(`/sites/${siteId}/history`, {
+            method: 'POST',
+            body: JSON.stringify({ bets, fromDate, toDate }),
+          });
+          log(`Cached ${cacheResult.added} new bets (${cacheResult.total} total)`, 'info');
+        } catch (err) {
+          log(`Cache save failed: ${err.message}`, 'warning');
+        }
+
+        console.log('Bet History:', bets);
+
+      } catch (err) {
+        log(`Error: ${err.message}`, 'error');
+      }
+    }
+
+    // ============================================
+    // Site-Specific History Scrapers
+    // ============================================
+
+    async function fetchHistoryPinnacle(siteId, fromDate, toDate) {
+      // Navigate to My Bets page
+      await api(`/browsers/${siteId}/goto`, {
+        method: 'POST',
+        body: JSON.stringify({ url: 'https://www.probet42.com/en/account/my-bets-full' }),
+      });
+      await new Promise(r => setTimeout(r, 2000));
+
+      // Click Settled dropdown option
+      await api(`/browsers/${siteId}/eval`, {
+        method: 'POST',
+        body: JSON.stringify({ script: 'document.querySelector("li[data=SETTLED] a").click(); true' }),
+      });
+      await new Promise(r => setTimeout(r, 1000));
+
+      // Set date range (format: DD/MM/YYYY for Pinnacle)
+      const fromFormatted = formatDateDDMMYYYY(fromDate);
+      const toFormatted = formatDateDDMMYYYY(toDate);
+      await api(`/browsers/${siteId}/eval`, {
+        method: 'POST',
+        body: JSON.stringify({
+          script: `document.querySelector("input[name=fromDate]").value = "${fromFormatted}"; document.querySelector("input[name=toDate]").value = "${toFormatted}"; true`
+        }),
+      });
+
+      // Click Search
+      await api(`/browsers/${siteId}/click`, {
+        method: 'POST',
+        body: JSON.stringify({ selector: 'text=Search' }),
+      });
+      await new Promise(r => setTimeout(r, 3000));
+
+      // Scrape table data
+      const { result: rows } = await api(`/browsers/${siteId}/eval`, {
+        method: 'POST',
+        body: JSON.stringify({
+          script: `Array.from(document.querySelectorAll("table tbody tr")).map(row => Array.from(row.querySelectorAll("td")).map(td => td.innerText.trim()))`
+        }),
+      });
+
+      if (!rows || rows.length === 0) return [];
+
+      // Parse Pinnacle bet data
+      return rows.filter(r => r.length >= 6).map(r => {
+        const detailParts = (r[2] || '').split('\n').map(s => s.trim());
+        const selParts = (r[3] || '').split('\n').map(s => s.trim());
+        const statusParts = (r[8] || r[7] || '').split('\n').map(s => s.trim());
+
+        return {
+          betId: detailParts[0] || '',
+          sport: detailParts[1] || '',
+          placedAt: detailParts[2] || '',
+          settledAt: detailParts[3] || '',
+          pick: selParts[0] || '',
+          matchup: selParts[1] || '',
+          betType: selParts[2] || '',
+          leagueInfo: selParts[3] || '',
+          product: r[1],
+          odds: r[4],
+          stake: r[5],
+          winLoss: r[6],
+          commission: r[7],
+          status: statusParts[0],
+          result: statusParts[1],
+          scores: statusParts.slice(2).join(' | '),
+          site: 'pinnacle',
+          scrapedAt: new Date().toISOString(),
+        };
+      });
+    }
+
+    async function fetchHistorySports411(siteId, fromDate, toDate) {
+      // Click History link
+      await api(`/browsers/${siteId}/click`, {
+        method: 'POST',
+        body: JSON.stringify({ selector: 'text=History' }),
+      });
+      await new Promise(r => setTimeout(r, 2000));
+
+      // Set date range using HTML date inputs
+      await api(`/browsers/${siteId}/eval`, {
+        method: 'POST',
+        body: JSON.stringify({
+          script: `document.querySelector("#start").value = "${fromDate}"; document.querySelector("#end").value = "${toDate}";
+                   document.querySelector("#start").dispatchEvent(new Event('change', { bubbles: true }));
+                   document.querySelector("#end").dispatchEvent(new Event('change', { bubbles: true })); true`
+        }),
+      });
+      await new Promise(r => setTimeout(r, 500));
+
+      // Click Custom Range to apply
+      await api(`/browsers/${siteId}/click`, {
+        method: 'POST',
+        body: JSON.stringify({ selector: 'button:has-text("Custom Range")' }),
+      });
+      await new Promise(r => setTimeout(r, 2000));
+
+      // Check for pagination - get total pages
+      const { result: totalPages } = await api(`/browsers/${siteId}/eval`, {
+        method: 'POST',
+        body: JSON.stringify({
+          script: `(() => {
+            const pageNums = Array.from(document.querySelectorAll('.pagination .page-number a')).map(a => parseInt(a.textContent));
+            return Math.max(...pageNums, 1);
+          })()`
+        }),
+      });
+
+      log(`Sports411: Found ${totalPages} pages to scrape`, 'info');
+
+      const allBets = [];
+      let currentPage = 1;
+
+      while (currentPage <= totalPages) {
+        log(`  Scraping page ${currentPage}/${totalPages}...`, 'info');
+
+        // Scrape current page
+        const { result: betsJson } = await api(`/browsers/${siteId}/eval`, {
+          method: 'POST',
+          body: JSON.stringify({
+            script: `JSON.stringify(Array.from(document.querySelectorAll("app-history-ticket .ticket")).map(t => {
+              const ticketMatch = t.querySelector(".date-data")?.textContent?.match(/Ticket # (\\d+)/);
+              const dateMatch = t.querySelector(".date-data")?.textContent?.match(/(\\d+\\/\\d+)@(\\d+:\\d+ [AP]M)/);
+              return {
+                betId: ticketMatch?.[1] || null,
+                betType: t.querySelector(".bet-type")?.textContent?.trim(),
+                selection: t.querySelector(".game")?.textContent?.trim()?.replace(/\\n/g, " "),
+                date: dateMatch?.[1] || null,
+                time: dateMatch?.[2] || null,
+                riskWin: t.querySelectorAll(".col-2 .amount")[0]?.textContent?.trim(),
+                winLoss: t.querySelectorAll(".col-2 .amount")[1]?.textContent?.trim(),
+                site: 'sports411',
+                scrapedAt: new Date().toISOString()
+              };
+            }))`
+          }),
+        });
+
+        const pageBets = JSON.parse(betsJson || '[]');
+        allBets.push(...pageBets);
+
+        // Navigate to next page if not on last page
+        if (currentPage < totalPages) {
+          await api(`/browsers/${siteId}/click`, {
+            method: 'POST',
+            body: JSON.stringify({ selector: '#nextBtn a' }),
+          });
+          await new Promise(r => setTimeout(r, 1500));
+        }
+
+        currentPage++;
+      }
+
+      return allBets;
+    }
+
+    async function fetchHistoryBetOnline(siteId, fromDate, toDate) {
+      // BetOnline's Angular app doesn't respond well to programmatic date changes
+      // User should manually navigate to Bet History and set date range first
+      // This scraper will capture whatever is currently displayed
+
+      log('BetOnline: Scraping currently displayed history (set date range manually if needed)', 'info');
+
+      // Check if on Bet History page, if not navigate there
+      const { result: onHistoryPage } = await api(`/browsers/${siteId}/eval`, {
+        method: 'POST',
+        body: JSON.stringify({ script: 'document.querySelector(".bet-history__table__body__rows") !== null' }),
+      });
+
+      if (!onHistoryPage) {
+        // Navigate to Bet History
+        await api(`/browsers/${siteId}/click`, {
+          method: 'POST',
+          body: JSON.stringify({ selector: '[class*="balance"], [class*="account-info"]' }),
+        });
+        await new Promise(r => setTimeout(r, 1000));
+
+        await api(`/browsers/${siteId}/click`, {
+          method: 'POST',
+          body: JSON.stringify({ selector: 'text=Bet History' }),
+        });
+        await new Promise(r => setTimeout(r, 2000));
+      }
+
+      // Scroll to load all bets (infinite scroll)
+      log('BetOnline: Scrolling to load all bets...', 'info');
+      for (let i = 0; i < 5; i++) {
+        await api(`/browsers/${siteId}/eval`, {
+          method: 'POST',
+          body: JSON.stringify({ script: 'window.scrollTo(0, document.body.scrollHeight)' }),
+        });
+        await new Promise(r => setTimeout(r, 800));
+      }
+
+      // Scrape bet data
+      const { result: betsJson } = await api(`/browsers/${siteId}/eval`, {
+        method: 'POST',
+        body: JSON.stringify({
+          script: `JSON.stringify(Array.from(document.querySelectorAll(".bet-history__table__body__rows")).map(row => {
+            const cols = row.querySelectorAll(".bet-history__table__body__rows__columns > div");
+            const ticketEl = cols[0];
+            const dateEl = cols[1];
+            const descEl = cols[2];
+            const statusEl = cols[4];
+            const amountEl = cols[5];
+            const toWinEl = cols[6];
+
+            // Extract clean values
+            const amountText = amountEl?.textContent?.trim() || '';
+            const amounts = amountText.match(/\\$[\\d,]+\\.\\d+/g) || [];
+
+            return {
+              betId: ticketEl?.textContent?.trim()?.replace(/[^\\d-]/g, ''),
+              date: dateEl?.textContent?.trim(),
+              description: descEl?.textContent?.trim(),
+              betType: statusEl?.textContent?.trim(),
+              status: amountEl?.textContent?.includes('Won') ? 'Won' : amountEl?.textContent?.includes('Lost') ? 'Lost' : amountEl?.textContent?.includes('Cancel') ? 'Cancelled' : 'Pending',
+              stake: amounts[0] || '',
+              toWin: toWinEl?.textContent?.match(/\\$[\\d,]+\\.\\d+/)?.[0] || '',
+              site: 'betonline',
+              scrapedAt: new Date().toISOString()
+            };
+          }))`
+        }),
+      });
+
+      return JSON.parse(betsJson || '[]');
+    }
+
+    function formatDateDDMMYYYY(dateStr) {
+      // Convert YYYY-MM-DD to DD/MM/YYYY
+      const [y, m, d] = dateStr.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function formatDateMMDDYYYY(dateStr) {
+      // Convert YYYY-MM-DD to MM/DD/YYYY
+      const [y, m, d] = dateStr.split('-');
+      return `${m}/${d}/${y}`;
+    }
+
+    // ============================================
+    // Browser Management
+    // ============================================
+
     async function loadBrowsers() {
       try {
         const { browsers } = await api('/browsers');
-        const list = document.getElementById('browserList');
-        const navSelect = document.getElementById('navBrowser');
-        const sessionSelect = document.getElementById('sessionBrowser');
+        runningBrowsers = browsers;
 
-        // Update browser list
+        const list = document.getElementById('browserList');
+
         if (browsers.length === 0) {
           list.innerHTML = '<div class="empty-state">No browsers running</div>';
         } else {
           list.innerHTML = browsers.map(b => `
-            <div class="browser-item">
-              <div class="browser-info">
-                <div class="browser-name">${b.name}</div>
-                <div class="browser-meta">
-                  Status: ${b.status} | Pages: ${b.pageCount}
-                  ${b.proxy ? ` | Proxy: ${b.proxy.server}` : ''}
-                </div>
+            <div class="site-card">
+              <div class="site-header">
+                <span class="site-name">${b.name}</span>
+                <span class="site-status">
+                  <span class="dot online"></span>
+                  ${b.status}
+                </span>
               </div>
-              <div class="browser-actions">
-                <button class="btn-secondary btn-small" onclick="selectBrowser('${b.name}')">Select</button>
+              <div class="site-meta">
+                Pages: ${b.pageCount}${b.proxy ? ` | Proxy: ${b.proxy.server}` : ''}
+              </div>
+              <div class="site-actions">
                 <button class="btn-danger btn-small" onclick="closeBrowser('${b.name}')">Close</button>
               </div>
             </div>
           `).join('');
         }
 
-        // Update dropdowns
-        const options = browsers.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
-        navSelect.innerHTML = '<option value="">Select browser...</option>' + options;
-        sessionSelect.innerHTML = '<option value="">Select browser...</option>' + options;
+        // Refresh site list to update statuses
+        loadSites();
       } catch (err) {
         // Already logged
       }
     }
 
-    // Load sessions
+    async function closeBrowser(name) {
+      if (!confirm(`Close browser "${name}"?`)) return;
+      try {
+        await api(`/browsers/${name}`, { method: 'DELETE' });
+        log(`Browser "${name}" closed`, 'success');
+        await loadBrowsers();
+      } catch (err) {
+        // Already logged
+      }
+    }
+
+    // ============================================
+    // Session Management
+    // ============================================
+
     async function loadSessions() {
       try {
         const { sessions } = await api('/sessions');
@@ -507,7 +1411,7 @@
           list.innerHTML = '<div class="empty-state">No saved sessions</div>';
         } else {
           list.innerHTML = sessions.map(s => `
-            <div class="session-tag">
+            <div class="tag">
               ${s}
               <span class="delete" onclick="deleteSession('${s}')">&times;</span>
             </div>
@@ -518,146 +1422,6 @@
       }
     }
 
-    // Launch browser
-    async function launchBrowser(event) {
-      event.preventDefault();
-      const name = document.getElementById('browserName').value;
-      const proxyUrl = document.getElementById('proxyUrl').value;
-      const headless = document.getElementById('headless').checked;
-
-      let proxy = undefined;
-      if (proxyUrl) {
-        try {
-          const url = new URL(proxyUrl);
-          proxy = {
-            server: `${url.protocol}//${url.host}`,
-            username: url.username || undefined,
-            password: url.password || undefined,
-          };
-        } catch {
-          proxy = { server: proxyUrl };
-        }
-      }
-
-      try {
-        await api('/browsers', {
-          method: 'POST',
-          body: JSON.stringify({ name, proxy, headless }),
-        });
-        log(`Browser "${name}" launched`, 'success');
-        document.getElementById('launchForm').reset();
-        loadBrowsers();
-      } catch (err) {
-        // Already logged
-      }
-    }
-
-    // Close browser
-    async function closeBrowser(name) {
-      if (!confirm(`Close browser "${name}"?`)) return;
-      try {
-        await api(`/browsers/${name}`, { method: 'DELETE' });
-        log(`Browser "${name}" closed`, 'success');
-        loadBrowsers();
-      } catch (err) {
-        // Already logged
-      }
-    }
-
-    // Select browser in dropdowns
-    function selectBrowser(name) {
-      document.getElementById('navBrowser').value = name;
-      document.getElementById('sessionBrowser').value = name;
-      log(`Selected browser: ${name}`, 'info');
-    }
-
-    // Navigate
-    async function navigateTo(event) {
-      event.preventDefault();
-      const name = document.getElementById('navBrowser').value;
-      const url = document.getElementById('navUrl').value;
-
-      if (!name) {
-        log('Please select a browser', 'error');
-        return;
-      }
-
-      try {
-        await api(`/browsers/${name}/goto`, {
-          method: 'POST',
-          body: JSON.stringify({ url }),
-        });
-        log(`Navigated ${name} to ${url}`, 'success');
-      } catch (err) {
-        // Already logged
-      }
-    }
-
-    // Take screenshot
-    async function takeScreenshot() {
-      const name = document.getElementById('navBrowser').value;
-      if (!name) {
-        log('Please select a browser', 'error');
-        return;
-      }
-
-      try {
-        const res = await fetch(`${API_BASE}/browsers/${name}/screenshot`);
-        if (!res.ok) throw new Error('Screenshot failed');
-
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        document.getElementById('screenshotImage').src = url;
-        document.getElementById('screenshotModal').classList.add('active');
-        log(`Screenshot taken for ${name}`, 'success');
-      } catch (err) {
-        log(`Error: ${err.message}`, 'error');
-      }
-    }
-
-    // Get content
-    async function getContent() {
-      const name = document.getElementById('navBrowser').value;
-      if (!name) {
-        log('Please select a browser', 'error');
-        return;
-      }
-
-      try {
-        const data = await api(`/browsers/${name}/content`);
-        document.getElementById('pageContent').textContent =
-          `URL: ${data.url}\nTitle: ${data.title}\n\n${data.content}`;
-        document.getElementById('contentModal').classList.add('active');
-        log(`Content retrieved for ${name}`, 'success');
-      } catch (err) {
-        // Already logged
-      }
-    }
-
-    // Save session
-    async function saveSession() {
-      const browserName = document.getElementById('sessionBrowser').value;
-      const sessionName = document.getElementById('sessionName').value;
-
-      if (!browserName || !sessionName) {
-        log('Please select a browser and enter session name', 'error');
-        return;
-      }
-
-      try {
-        await api(`/browsers/${browserName}/session`, {
-          method: 'POST',
-          body: JSON.stringify({ sessionName }),
-        });
-        log(`Session "${sessionName}" saved`, 'success');
-        document.getElementById('sessionName').value = '';
-        loadSessions();
-      } catch (err) {
-        // Already logged
-      }
-    }
-
-    // Delete session
     async function deleteSession(name) {
       if (!confirm(`Delete session "${name}"?`)) return;
       try {
@@ -669,9 +1433,129 @@
       }
     }
 
-    // Modal helpers
+    // ============================================
+    // Proxy Management
+    // ============================================
+
+    async function loadProxies() {
+      try {
+        const { proxies } = await api('/proxies');
+        cachedProxies = proxies || [];
+      } catch (err) {
+        console.error('Failed to load proxies from server:', err);
+      }
+
+      const proxyList = document.getElementById('proxyList');
+
+      if (cachedProxies.length === 0) {
+        proxyList.innerHTML = '<span class="empty-state" style="padding: 10px;">No saved proxies</span>';
+      } else {
+        proxyList.innerHTML = cachedProxies.map(p => `
+          <div class="tag">
+            <strong>${p.name}</strong>: ${p.server}
+            <span class="delete" onclick="deleteProxy('${p.name}')">&times;</span>
+          </div>
+        `).join('');
+      }
+
+      updateProxyDropdowns();
+    }
+
+    function updateProxyDropdowns() {
+      // Update all proxy dropdowns
+      const dropdowns = [
+        document.getElementById('siteProxy'),
+        document.getElementById('editSiteProxy'),
+      ];
+
+      dropdowns.forEach(select => {
+        if (!select) return;
+        const current = select.value;
+
+        select.innerHTML = '<option value="">No proxy</option>' +
+          cachedProxies.map(p => `<option value="${p.name}">${p.name} (${p.server})</option>`).join('');
+
+        if (current && cachedProxies.some(p => p.name === current)) {
+          select.value = current;
+        }
+      });
+    }
+
+    async function saveProxy() {
+      const name = document.getElementById('proxyName').value.trim();
+      const server = document.getElementById('proxyServer').value.trim();
+      const username = document.getElementById('proxyUser').value.trim();
+      const password = document.getElementById('proxyPass').value;
+
+      if (!name || !server) {
+        log('Proxy name and server are required', 'error');
+        return;
+      }
+
+      const proxyData = { name, server, username: username || undefined, password: password || undefined };
+
+      try {
+        await api('/proxies', {
+          method: 'POST',
+          body: JSON.stringify(proxyData),
+        });
+        log(`Proxy "${name}" saved`, 'success');
+        await loadProxies();
+
+        document.getElementById('proxyName').value = '';
+        document.getElementById('proxyServer').value = '';
+        document.getElementById('proxyUser').value = '';
+        document.getElementById('proxyPass').value = '';
+      } catch (err) {
+        log(`Failed to save proxy: ${err.message}`, 'error');
+      }
+    }
+
+    async function deleteProxy(name) {
+      if (!confirm(`Delete proxy "${name}"?`)) return;
+      try {
+        await api(`/proxies/${name}`, { method: 'DELETE' });
+        log(`Proxy "${name}" deleted`, 'success');
+        await loadProxies();
+      } catch (err) {
+        log(`Failed to delete proxy: ${err.message}`, 'error');
+      }
+    }
+
+    // ============================================
+    // Tab Switching
+    // ============================================
+
+    function switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    // ============================================
+    // UI Helpers
+    // ============================================
+
+    function openModal(id) {
+      updateProxyDropdowns();
+      document.getElementById(id).classList.add('active');
+    }
+
     function closeModal(id) {
       document.getElementById(id).classList.remove('active');
+    }
+
+    function toggleCollapsible(header) {
+      header.classList.toggle('collapsed');
+      header.nextElementSibling.classList.toggle('collapsed');
     }
 
     // Close modal on backdrop click
@@ -681,19 +1565,31 @@
       });
     });
 
-    // Refresh all
+    // ============================================
+    // Initialization
+    // ============================================
+
     function refreshAll() {
       loadBrowsers();
       loadSessions();
-      log('Refreshed', 'info');
+      loadProxies();
     }
 
-    // Auto-refresh every 5 seconds
-    setInterval(refreshAll, 5000);
+    // Auto-refresh browsers and sessions
+    setInterval(() => {
+      loadBrowsers();
+      loadSessions();
+    }, 5000);
 
     // Initial load
-    refreshAll();
-    log('Control panel connected', 'success');
+    async function init() {
+      await loadProxies();
+      await loadSites();
+      await loadBrowsers();
+      await loadSessions();
+      log('BB-Browser ready (server-side storage)', 'success');
+    }
+    init();
   </script>
 </body>
 </html>

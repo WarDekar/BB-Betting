@@ -189,6 +189,12 @@ export abstract class BaseSiteWorkflow implements ISiteWorkflow {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  /** Helper: sleep for random duration between min and max ms */
+  protected randomDelay(minMs: number = 800, maxMs: number = 2000): Promise<void> {
+    const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+    return this.sleep(delay);
+  }
+
   /** Helper: create a workflow result */
   protected result<T>(success: boolean, data?: T, error?: string): WorkflowResult<T> {
     return { success, data, error, timestamp: new Date() };

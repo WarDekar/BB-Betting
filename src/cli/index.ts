@@ -3,6 +3,9 @@
 import { Command } from 'commander';
 import { BrowserManager } from '../core/BrowserManager.js';
 import { WorkflowManager } from '../workflows/WorkflowManager.js';
+import { PinnacleWorkflow } from '../workflows/PinnacleWorkflow.js';
+import { Sports411Workflow } from '../workflows/Sports411Workflow.js';
+import { BetOnlineWorkflow } from '../workflows/BetOnlineWorkflow.js';
 import { ApiServer } from '../api/server.js';
 
 const program = new Command();
@@ -21,6 +24,10 @@ function getBrowserManager(): BrowserManager {
 function getWorkflowManager(): WorkflowManager {
   if (!workflowManager) {
     workflowManager = new WorkflowManager(getBrowserManager());
+    // Register site workflows
+    workflowManager.register('pinnacle', PinnacleWorkflow);
+    workflowManager.register('sports411', Sports411Workflow);
+    workflowManager.register('betonline', BetOnlineWorkflow);
   }
   return workflowManager;
 }

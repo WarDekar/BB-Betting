@@ -3,6 +3,7 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { WorkflowManager } from '../workflows/WorkflowManager.js';
+import { SiteConfigManager, StoredSiteConfig, StoredProxy } from '../config/SiteConfigManager.js';
 import type { SiteConfig, ProxyConfig } from '../types/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,11 +21,13 @@ export interface ApiServerConfig {
 export class ApiServer {
   private app: express.Application;
   private workflowManager: WorkflowManager;
+  private siteConfigManager: SiteConfigManager;
   private config: ApiServerConfig;
   private server: ReturnType<typeof this.app.listen> | null = null;
 
   constructor(workflowManager: WorkflowManager, config: ApiServerConfig) {
     this.workflowManager = workflowManager;
+    this.siteConfigManager = new SiteConfigManager();
     this.config = { host: '127.0.0.1', ...config };
     this.app = express();
     this.setupMiddleware();
@@ -181,6 +184,122 @@ export class ApiServer {
       }
     });
 
+    // Evaluate JavaScript on page (for testing/debugging)
+    this.app.post('/browsers/:name/eval', async (req, res, next) => {
+      try {
+        const browser = browserMgr.get(req.params.name);
+        if (!browser) {
+          res.status(404).json({ error: 'Browser not found' });
+          return;
+        }
+
+        const { script } = req.body as { script: string };
+        if (!script) {
+          res.status(400).json({ error: 'script is required' });
+          return;
+        }
+
+        const page = browser.getCurrentPage();
+        if (!page) {
+          res.status(400).json({ error: 'No page available' });
+          return;
+        }
+
+        const result = await page.evaluate(script);
+        res.json({ result });
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // Fill input field
+    this.app.post('/browsers/:name/fill', async (req, res, next) => {
+      try {
+        const browser = browserMgr.get(req.params.name);
+        if (!browser) {
+          res.status(404).json({ error: 'Browser not found' });
+          return;
+        }
+
+        const { selector, value } = req.body as { selector: string; value: string };
+        if (!selector || value === undefined) {
+          res.status(400).json({ error: 'selector and value are required' });
+          return;
+        }
+
+        const page = browser.getCurrentPage();
+        if (!page) {
+          res.status(400).json({ error: 'No page available' });
+          return;
+        }
+
+        await page.fill(selector, value);
+        res.json({ success: true });
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // Click element
+    this.app.post('/browsers/:name/click', async (req, res, next) => {
+      try {
+        const browser = browserMgr.get(req.params.name);
+        if (!browser) {
+          res.status(404).json({ error: 'Browser not found' });
+          return;
+        }
+
+        const { selector, force, position } = req.body as {
+          selector: string;
+          force?: boolean;
+          position?: { x: number; y: number };
+        };
+        if (!selector) {
+          res.status(400).json({ error: 'selector is required' });
+          return;
+        }
+
+        const page = browser.getCurrentPage();
+        if (!page) {
+          res.status(400).json({ error: 'No page available' });
+          return;
+        }
+
+        await page.click(selector, { force, position });
+        res.json({ success: true });
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // Mouse click at coordinates (for Angular apps that don't respond to synthetic clicks)
+    this.app.post('/browsers/:name/mouse-click', async (req, res, next) => {
+      try {
+        const browser = browserMgr.get(req.params.name);
+        if (!browser) {
+          res.status(404).json({ error: 'Browser not found' });
+          return;
+        }
+
+        const { x, y, button = 'left' } = req.body as { x: number; y: number; button?: 'left' | 'right' | 'middle' };
+        if (x === undefined || y === undefined) {
+          res.status(400).json({ error: 'x and y coordinates are required' });
+          return;
+        }
+
+        const page = browser.getCurrentPage();
+        if (!page) {
+          res.status(400).json({ error: 'No page available' });
+          return;
+        }
+
+        await page.mouse.click(x, y, { button });
+        res.json({ success: true, x, y });
+      } catch (err) {
+        next(err);
+      }
+    });
+
     // ============================================
     // Sessions
     // ============================================
@@ -255,30 +374,95 @@ export class ApiServer {
 
     // List configured sites
     this.app.get('/sites', (_req, res) => {
-      const sites = this.workflowManager.listSites();
+      const sites = this.siteConfigManager.listSites();
       res.json({ sites });
     });
 
-    // Add site configuration
-    this.app.post('/sites', (req, res) => {
-      const config = req.body as SiteConfig;
-      if (!config.id || !config.name || !config.baseUrl) {
-        res.status(400).json({ error: 'id, name, and baseUrl are required' });
-        return;
-      }
+    // Add site configuration (persisted to disk)
+    this.app.post('/sites', async (req, res, next) => {
+      try {
+        const config = req.body as StoredSiteConfig;
+        if (!config.id || !config.name || !config.baseUrl) {
+          res.status(400).json({ error: 'id, name, and baseUrl are required' });
+          return;
+        }
 
-      this.workflowManager.addSite(config);
-      res.status(201).json({ site: config });
+        // Check if site already exists
+        const existing = this.siteConfigManager.getSite(config.id);
+        if (existing) {
+          // Update existing site
+          await this.siteConfigManager.updateSite(config.id, config);
+        } else {
+          // Add new site
+          await this.siteConfigManager.addSite(config);
+        }
+
+        // Also register with workflow manager
+        const proxy = this.siteConfigManager.getProxyForSite(config.id);
+        this.workflowManager.addSite({
+          id: config.id,
+          name: config.name,
+          baseUrl: config.baseUrl,
+          proxy: config.proxy || proxy,
+          username: config.username,
+          password: config.password,
+        } as SiteConfig);
+
+        res.status(201).json({ site: config });
+      } catch (err) {
+        next(err);
+      }
     });
 
     // Get site config
     this.app.get('/sites/:id', (req, res) => {
-      const config = this.workflowManager.getSiteConfig(req.params.id);
+      const config = this.siteConfigManager.getSite(req.params.id);
       if (!config) {
         res.status(404).json({ error: 'Site not found' });
         return;
       }
       res.json({ site: config });
+    });
+
+    // Update site config
+    this.app.put('/sites/:id', async (req, res, next) => {
+      try {
+        const updates = req.body as Partial<StoredSiteConfig>;
+        const updated = await this.siteConfigManager.updateSite(req.params.id, updates);
+        if (!updated) {
+          res.status(404).json({ error: 'Site not found' });
+          return;
+        }
+
+        // Update workflow manager too
+        const proxy = this.siteConfigManager.getProxyForSite(updated.id);
+        this.workflowManager.addSite({
+          id: updated.id,
+          name: updated.name,
+          baseUrl: updated.baseUrl,
+          proxy,
+          username: updated.username,
+          password: updated.password,
+        } as SiteConfig);
+
+        res.json({ site: updated });
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // Delete site config
+    this.app.delete('/sites/:id/config', async (req, res, next) => {
+      try {
+        const deleted = await this.siteConfigManager.deleteSite(req.params.id);
+        if (!deleted) {
+          res.status(404).json({ error: 'Site not found' });
+          return;
+        }
+        res.json({ success: true });
+      } catch (err) {
+        next(err);
+      }
     });
 
     // Initialize site workflow
@@ -326,6 +510,139 @@ export class ApiServer {
     });
 
     // ============================================
+    // Proxies (persistent storage)
+    // ============================================
+
+    // List all proxies
+    this.app.get('/proxies', (_req, res) => {
+      const proxies = this.siteConfigManager.listProxies();
+      res.json({ proxies });
+    });
+
+    // Add/update proxy
+    this.app.post('/proxies', async (req, res, next) => {
+      try {
+        const proxy = req.body as StoredProxy;
+        if (!proxy.name || !proxy.server) {
+          res.status(400).json({ error: 'name and server are required' });
+          return;
+        }
+
+        await this.siteConfigManager.addProxy(proxy);
+        res.status(201).json({ proxy });
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // Get proxy
+    this.app.get('/proxies/:name', (req, res) => {
+      const proxy = this.siteConfigManager.getProxy(req.params.name);
+      if (!proxy) {
+        res.status(404).json({ error: 'Proxy not found' });
+        return;
+      }
+      res.json({ proxy });
+    });
+
+    // Delete proxy
+    this.app.delete('/proxies/:name', async (req, res, next) => {
+      try {
+        const deleted = await this.siteConfigManager.deleteProxy(req.params.name);
+        if (!deleted) {
+          res.status(404).json({ error: 'Proxy not found' });
+          return;
+        }
+        res.json({ success: true });
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // ============================================
+    // Bet History Cache
+    // ============================================
+
+    const CACHE_DIR = './cache';
+
+    // Save bet history to cache
+    this.app.post('/sites/:id/history', async (req, res, next) => {
+      try {
+        const { bets, fromDate, toDate } = req.body as {
+          bets: Array<Record<string, unknown>>;
+          fromDate: string;
+          toDate: string;
+        };
+
+        if (!bets || !Array.isArray(bets)) {
+          res.status(400).json({ error: 'bets array is required' });
+          return;
+        }
+
+        const fs = await import('fs/promises');
+        const path = await import('path');
+
+        // Ensure cache directory exists
+        await fs.mkdir(CACHE_DIR, { recursive: true });
+
+        const siteId = req.params.id;
+        const cacheFile = path.join(CACHE_DIR, `${siteId}-history.json`);
+
+        // Load existing cache or create new
+        let cache: {
+          siteId: string;
+          lastUpdated: string;
+          bets: Array<Record<string, unknown>>;
+        };
+
+        try {
+          const existing = await fs.readFile(cacheFile, 'utf-8');
+          cache = JSON.parse(existing);
+        } catch {
+          cache = { siteId, lastUpdated: '', bets: [] };
+        }
+
+        // Merge new bets (dedupe by betId if present)
+        const existingIds = new Set(cache.bets.map((b: Record<string, unknown>) => b.betId));
+        const newBets = bets.filter((b) => !b.betId || !existingIds.has(b.betId));
+        cache.bets = [...cache.bets, ...newBets];
+        cache.lastUpdated = new Date().toISOString();
+
+        // Save cache
+        await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2));
+
+        res.json({
+          success: true,
+          added: newBets.length,
+          total: cache.bets.length,
+          cacheFile,
+        });
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // Get cached bet history
+    this.app.get('/sites/:id/history', async (req, res, next) => {
+      try {
+        const fs = await import('fs/promises');
+        const path = await import('path');
+
+        const siteId = req.params.id;
+        const cacheFile = path.join(CACHE_DIR, `${siteId}-history.json`);
+
+        try {
+          const data = await fs.readFile(cacheFile, 'utf-8');
+          res.json(JSON.parse(data));
+        } catch {
+          res.json({ siteId, lastUpdated: null, bets: [] });
+        }
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // ============================================
     // Error handler
     // ============================================
     this.app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
@@ -336,6 +653,23 @@ export class ApiServer {
 
   /** Start the API server */
   async start(): Promise<void> {
+    // Load saved site configs and proxies from disk
+    await this.siteConfigManager.load();
+
+    // Register saved sites with workflow manager
+    for (const site of this.siteConfigManager.listSites()) {
+      const proxy = this.siteConfigManager.getProxyForSite(site.id);
+      this.workflowManager.addSite({
+        id: site.id,
+        name: site.name,
+        baseUrl: site.baseUrl,
+        proxy,
+        username: site.username,
+        password: site.password,
+      } as SiteConfig);
+      console.log(`📋 Loaded site: ${site.name}`);
+    }
+
     return new Promise((resolve) => {
       this.server = this.app.listen(this.config.port, this.config.host!, () => {
         console.log(`🚀 BB-Browser API running at http://${this.config.host}:${this.config.port}`);

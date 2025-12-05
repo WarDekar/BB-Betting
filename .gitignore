@@ -7,6 +7,12 @@ dist/
 # Sessions (may contain sensitive data)
 sessions/
 
+# Site configs (contains credentials) - only root config/, not src/config/
+/config/
+
+# Bet history cache
+cache/
+
 # Environment
 .env
 .env.local
